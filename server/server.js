@@ -35,7 +35,8 @@ app.post('/register/start', (req, res) => {
             userVerification: 'required',
             residentKey: 'preferred',
             requireResidentKey: false,
-        }
+        },
+        attestation: "direct"
     };
     res.json(pubKey);
 });
@@ -56,6 +57,7 @@ app.post('/register/finish', async (req, res) => {
         return res.status(400).send({ error: error.message });
     }
     const { verified, registrationInfo } = verification;
+    console.log(registrationInfo)
     if (verified) {
         users[username] = registrationInfo;
         return res.status(200).send(true);
@@ -64,27 +66,18 @@ app.post('/register/finish', async (req, res) => {
 });
 app.post('/login/start', (req, res) => {
     let username = req.body.username;
-    if (!users[username]) {
-        return res.status(404).send(false);
-    }
+
     let challenge = getNewChallenge();
     challenges[username] = convertChallenge(challenge);
     res.json({
-        challenge,
-        rpId,
-        allowCredentials: [{
-            type: 'public-key',
-            id: users[username].credentialID,
-            transports: ['internal'],
-        }],
+        challenge: challenge,
+        rpId: rpId,
+        allowCredentials: [],
         userVerification: 'preferred',
     });
 });
 app.post('/login/finish', async (req, res) => {
     let username = req.body.username;
-    if (!users[username]) {
-        return res.status(404).send(false);
-    }
     let verification;
     try {
         const user = users[username];
