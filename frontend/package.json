@@ -9,13 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ownid/webauthn": "^1.0.0",
     "@simplewebauthn/browser": "^10.0.0",
     "@simplewebauthn/server": "^10.0.1",
+    "@starknet-react/chains": "^0.1.7",
+    "@starknet-react/core": "^2.8.3",
     "base64url": "^3.0.1",
+    "get-starknet-core": "^3.3.2",
     "next": "14.2.5",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "starknet": "^5.29.0"
   },
   "devDependencies": {
     "eslint": "^8",

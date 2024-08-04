@@ -1,5 +1,3 @@
-import { fido2Get, fido2Create, } from '@ownid/webauthn';
-
 import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
 import * as helpers from '@simplewebauthn/server/helpers';

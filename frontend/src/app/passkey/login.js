@@ -21,6 +21,7 @@ export async function loginCredentials() {
         userVerification: "preferred",
     })
     const credentials = await startAuthentication(options)
+    console.log("Credentials: ", credentials)
 
     const rawPubKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0G8G_0m_ZgiZkfMdP8dedwA4LAwuMtu65tcWvXAW-oZWOZ1UUOCXTpbsleLmZUbRBwKfzuX-ozWTn87ng_Yvkg"
     const pubKeyArray = helpers.isoBase64URL.toBuffer(rawPubKey, "base64url")
