@@ -77,3 +77,9 @@ function mergeBuffer(buffer1, buffer2) {
     tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
     return tmp.buffer;
 }
+
+export function uint8ArrayToHex(uint8Array) {
+    return Array.from(uint8Array)
+        .map(byte => byte.toString(16).padStart(2, '0')) // Convert each byte to hex and pad with 0 if necessary
+        .join(''); // Join all the hex strings together
+}

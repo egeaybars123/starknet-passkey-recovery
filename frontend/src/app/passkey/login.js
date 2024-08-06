@@ -1,6 +1,6 @@
 import { startAuthentication } from '@simplewebauthn/browser';
 import { generateAuthenticationOptions, verifyAuthenticationResponse } from '@simplewebauthn/server';
-import { getNewChallenge, convertChallenge, base64ToArrayBuffer, convertEcdsaAsn1Signature } from './utils';
+import { getNewChallenge, convertChallenge, base64ToArrayBuffer, convertEcdsaAsn1Signature, uint8ArrayToHex } from './utils';
 import * as helpers from '@simplewebauthn/server/helpers';
 
 //0x067981c7f9f55bcbdd4e0d0a9c5bbcea77dacb42cccbf13554a847d6353f728e
@@ -20,10 +20,16 @@ export async function loginCredentials() {
         challenge: buffer_challenge,
         userVerification: "preferred",
     })
+    //console.log(options)
     const credentials = await startAuthentication(options)
-    console.log("Credentials: ", credentials)
+    //console.log("Credentials: ", credentials)
 
-    const rawPubKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0G8G_0m_ZgiZkfMdP8dedwA4LAwuMtu65tcWvXAW-oZWOZ1UUOCXTpbsleLmZUbRBwKfzuX-ozWTn87ng_Yvkg"
+    //Check if the additional key exists for signature verificaton on Starknet
+    const clientDataJson = JSON.parse(helpers.isoBase64URL.toUTF8String(credentials.response.clientDataJSON))
+    console.log("ClientData: ", clientDataJson)
+    console.log("Result", Object.keys(clientDataJson).includes("other_keys_can_be_added_here"))
+
+    const rawPubKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWw-D-UcqK-5aMJNKykOXZurb-LZX1-sFeBGvL4GHRekyckym-gVuCmsQEdPTFWryTBHaUoiu_hwJC2Nxil0tpQ"
     const pubKeyArray = helpers.isoBase64URL.toBuffer(rawPubKey, "base64url")
     const extraData = new Uint8Array([165, 1, 2, 3, 38, 32, 1, 33, 88, 32,])
     const extraData2 = new Uint8Array([34, 88, 32])
@@ -47,6 +53,7 @@ export async function loginCredentials() {
     const clientDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.clientDataJSON, "base64url")
     const clientDataHashBuffer = await crypto.subtle.digest('SHA-256', clientDataBuffer)
     const clientDataHash = new Uint8Array(clientDataHashBuffer)
+    console.log("ClientDataHash: ", uint8ArrayToHex(clientDataHash))
     const authDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.authenticatorData, "base64url")
     const signatureBuffer = helpers.isoBase64URL.toBuffer(credentials.response.signature, "base64url")
     const signature = convertEcdsaAsn1Signature(signatureBuffer);

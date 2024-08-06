@@ -7,7 +7,7 @@ import { useAccount } from "@starknet-react/core";
 export default function Passkey() {
     const [username, setUsername] = useState('');
     const [loginUsername, setLoginUsername] = useState('');
-    //const { address } = useAccount();
+    const { address } = useAccount();
 
     return (
         <div className="mt-6 flex justify-center">
@@ -17,7 +17,7 @@ export default function Passkey() {
                 <div className="mb-8">
                     <h2 className="text-xl font-semibold text-gray-700 mb-4">Register</h2>
                     <input type="text" onChange={(e) => setUsername(e.target.value)} id="register-username" placeholder="Username" className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4" />
-                    <button onClick={() => registerPasskey(username)} className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300">Register Passkey</button>
+                    <button onClick={() => registerPasskey(address)} className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300">Register Passkey</button>
                     <p id="register-status" className="text-sm text-gray-600 mt-2"></p>
                 </div>
 

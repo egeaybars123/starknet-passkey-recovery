@@ -4,6 +4,8 @@ import * as helpers from '@simplewebauthn/server/helpers';
 
 //import { decodeCredentialPublicKey } from '@simplewebauthn/server/script/helpers/decodeCredentialPublicKey'
 //Credential ID: "hcelOAyw_qCfhfymQSkurD_4t7A"
+
+
 export async function registerPasskey(username) {
     const rpId = 'localhost'
     const expectedOrigin = ['http://localhost:3000'];
@@ -11,6 +13,8 @@ export async function registerPasskey(username) {
     const newChallenge = getNewChallenge();
     let challenge = convertChallenge(newChallenge);
     const buffChallenge = base64urlToArrayBuffer(challenge)
+
+    username = username.slice(2)
 
     const options = await generateRegistrationOptions(
         {
