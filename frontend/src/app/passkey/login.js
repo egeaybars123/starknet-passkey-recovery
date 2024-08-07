@@ -1,6 +1,6 @@
 import { startAuthentication } from '@simplewebauthn/browser';
 import { generateAuthenticationOptions, verifyAuthenticationResponse } from '@simplewebauthn/server';
-import { getNewChallenge, convertChallenge, base64ToArrayBuffer, convertEcdsaAsn1Signature, uint8ArrayToHex } from './utils';
+import { getNewChallenge, convertChallenge, base64ToArrayBuffer, convertEcdsaAsn1Signature, uint8ArrayToHex, uint8ArrayToBigInt } from './utils';
 import * as helpers from '@simplewebauthn/server/helpers';
 
 //0x067981c7f9f55bcbdd4e0d0a9c5bbcea77dacb42cccbf13554a847d6353f728e
@@ -25,7 +25,7 @@ export async function loginCredentials() {
     //console.log("Credentials: ", credentials)
 
     //Check if the additional key exists for signature verificaton on Starknet
-    const clientDataJson = JSON.parse(helpers.isoBase64URL.toUTF8String(credentials.response.clientDataJSON))
+    const clientDataJson = helpers.isoBase64URL.toUTF8String(credentials.response.clientDataJSON)
     console.log("ClientData: ", clientDataJson)
     console.log("Result", Object.keys(clientDataJson).includes("other_keys_can_be_added_here"))
 
@@ -51,12 +51,16 @@ export async function loginCredentials() {
     combinedArray.set(credPubKey_Y, offset);
 
     const clientDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.clientDataJSON, "base64url")
+
     const clientDataHashBuffer = await crypto.subtle.digest('SHA-256', clientDataBuffer)
     const clientDataHash = new Uint8Array(clientDataHashBuffer)
     console.log("ClientDataHash: ", uint8ArrayToHex(clientDataHash))
     const authDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.authenticatorData, "base64url")
+    console.log("Auth Data: ", helpers.isoBase64URL.toBuffer(credentials.response.authenticatorData, "base64url").toString());
     const signatureBuffer = helpers.isoBase64URL.toBuffer(credentials.response.signature, "base64url")
     const signature = convertEcdsaAsn1Signature(signatureBuffer);
+    console.log("signature_r: ", uint8ArrayToBigInt(new Uint8Array(signature.slice(0, 32))))
+    console.log("signature_s: ", uint8ArrayToBigInt(new Uint8Array(signature.slice(32))))
     const signedData = helpers.isoUint8Array.concat([authDataBuffer, clientDataHash])
 
     const publicKeyJwk = {

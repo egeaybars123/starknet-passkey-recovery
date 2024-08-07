@@ -1,6 +1,7 @@
 import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
 import * as helpers from '@simplewebauthn/server/helpers';
+import { uint8ArrayToBigInt } from './utils';
 
 //import { decodeCredentialPublicKey } from '@simplewebauthn/server/script/helpers/decodeCredentialPublicKey'
 //Credential ID: "hcelOAyw_qCfhfymQSkurD_4t7A"
@@ -49,7 +50,8 @@ export async function registerPasskey(username) {
 
     const parsedPubKey = helpers.decodeCredentialPublicKey(verification.registrationInfo.credentialPublicKey)
     console.log(parsedPubKey)
-    console.log("x: ", parsedPubKey.get(-2), "y: ", parsedPubKey.get(-3))
+    console.log("x: ", uint8ArrayToBigInt(parsedPubKey.get(-2)), "y: ", uint8ArrayToBigInt(parsedPubKey.get(-3)))
+
 
     /*
     const pubKey = {

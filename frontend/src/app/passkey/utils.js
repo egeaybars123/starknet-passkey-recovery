@@ -83,3 +83,16 @@ export function uint8ArrayToHex(uint8Array) {
         .map(byte => byte.toString(16).padStart(2, '0')) // Convert each byte to hex and pad with 0 if necessary
         .join(''); // Join all the hex strings together
 }
+
+export function uint8ArrayToBigInt(uint8Array) {
+    if (uint8Array.length !== 32) {
+        throw new Error("Invalid Uint8Array length for u256. Expected 32 bytes.");
+    }
+
+    let hexString = "0x";
+    for (const byte of uint8Array) {
+        hexString += byte.toString(16).padStart(2, "0");
+    }
+
+    return BigInt(hexString);
+}
