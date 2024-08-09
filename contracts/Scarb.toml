@@ -4,6 +4,8 @@ version = "0.1.0"
 
 [dependencies]
 starknet = ">=2.3.0"
+alexandria_math = { path = "../../passkey_codec/alexandria/src/math" }
+alexandria_bytes = { path = "../../passkey_codec/alexandria/src/bytes" }
 
 [[target.starknet-contract]]
 sierra = true
