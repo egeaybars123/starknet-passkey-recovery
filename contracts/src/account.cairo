@@ -10,7 +10,6 @@ trait IAccount<T> {
     fn set_recovery_pub_key(ref self: T, pub_key: P256_PubKey);
     fn start_recovery_phase(ref self: T, recoverer: ContractAddress, challenge: Array<u8>, r: u256, s: u256, extra_data: bool);
     fn complete_recovery(ref self: T, pub_key: felt252);
-    fn get_owner(self: @T) -> ContractAddress;
     fn is_valid_signature(self: @T, hash: felt252, signature: Array<felt252>) -> felt252;
     fn get_in_recovery_phase(self: @T) -> bool;
     fn __execute__(ref self: T, calls: Array<Call>) -> Array<Span<felt252>>;
@@ -35,7 +34,7 @@ mod Account {
     use super::{Call, IAccount, P256_PubKey};
     use starknet::{
         get_caller_address, call_contract_syscall, get_tx_info, ContractAddress, VALIDATED,
-        get_block_timestamp, contract_address_const
+        get_block_timestamp, contract_address_const, get_contract_address
     };
     use zeroable::Zeroable;
     use ecdsa::check_ecdsa_signature;
@@ -52,32 +51,25 @@ mod Account {
     struct Storage {
         public_key: felt252,
         recovery_pub_key: P256_PubKey,
-        owner: ContractAddress,
         in_recovery_phase: bool,
         recoverer: ContractAddress,
         recovery_timestamp: u64,
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, public_key: felt252) {
+    fn constructor(ref self: ContractState, public_key: felt252,) {
         self.public_key.write(public_key);
-        self.owner.write(get_caller_address());
     }
 
     #[abi(embed_v0)]
     impl AccountImpl of IAccount<ContractState> {
         fn set_recovery_pub_key(ref self: ContractState, pub_key: P256_PubKey) {
-            let owner = self.owner.read();
-            assert!(owner == get_caller_address());
+            assert!(get_contract_address() == get_caller_address());
             self.recovery_pub_key.write(pub_key);
         }
 
         fn get_in_recovery_phase(self: @ContractState) -> bool {
             self.in_recovery_phase.read()
-        }
-
-        fn get_owner(self: @ContractState) -> ContractAddress {
-            self.owner.read()
         }
         
         fn start_recovery_phase(ref self: ContractState, recoverer: ContractAddress, challenge: Array<u8>, r: u256, s: u256, extra_data: bool) {

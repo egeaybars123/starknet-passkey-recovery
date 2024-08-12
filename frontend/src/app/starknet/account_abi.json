@@ -1,0 +1,278 @@
+{
+    "abi": [
+    {
+        "type": "impl",
+        "name": "AccountImpl",
+        "interface_name": "passkeys::account::IAccount"
+    },
+    {
+        "type": "struct",
+        "name": "core::integer::u256",
+        "members": [
+            {
+                "name": "low",
+                "type": "core::integer::u128"
+            },
+            {
+                "name": "high",
+                "type": "core::integer::u128"
+            }
+        ]
+    },
+    {
+        "type": "struct",
+        "name": "passkeys::account::P256_PubKey",
+        "members": [
+            {
+                "name": "pub_x",
+                "type": "core::integer::u256"
+            },
+            {
+                "name": "pub_y",
+                "type": "core::integer::u256"
+            }
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "core::bool",
+        "variants": [
+            {
+                "name": "False",
+                "type": "()"
+            },
+            {
+                "name": "True",
+                "type": "()"
+            }
+        ]
+    },
+    {
+        "type": "struct",
+        "name": "core::array::Span::<core::felt252>",
+        "members": [
+            {
+                "name": "snapshot",
+                "type": "@core::array::Array::<core::felt252>"
+            }
+        ]
+    },
+    {
+        "type": "struct",
+        "name": "core::starknet::account::Call",
+        "members": [
+            {
+                "name": "to",
+                "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+                "name": "selector",
+                "type": "core::felt252"
+            },
+            {
+                "name": "calldata",
+                "type": "core::array::Span::<core::felt252>"
+            }
+        ]
+    },
+    {
+        "type": "interface",
+        "name": "passkeys::account::IAccount",
+        "items": [
+            {
+                "type": "function",
+                "name": "public_key",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "type": "core::felt252"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "set_recovery_pub_key",
+                "inputs": [
+                    {
+                        "name": "pub_key",
+                        "type": "passkeys::account::P256_PubKey"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "start_recovery_phase",
+                "inputs": [
+                    {
+                        "name": "recoverer",
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    },
+                    {
+                        "name": "challenge",
+                        "type": "core::array::Array::<core::integer::u8>"
+                    },
+                    {
+                        "name": "r",
+                        "type": "core::integer::u256"
+                    },
+                    {
+                        "name": "s",
+                        "type": "core::integer::u256"
+                    },
+                    {
+                        "name": "extra_data",
+                        "type": "core::bool"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "complete_recovery",
+                "inputs": [
+                    {
+                        "name": "pub_key",
+                        "type": "core::felt252"
+                    }
+                ],
+                "outputs": [],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "get_owner",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "type": "core::starknet::contract_address::ContractAddress"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "is_valid_signature",
+                "inputs": [
+                    {
+                        "name": "hash",
+                        "type": "core::felt252"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "core::array::Array::<core::felt252>"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::felt252"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "get_in_recovery_phase",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "type": "core::bool"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "__execute__",
+                "inputs": [
+                    {
+                        "name": "calls",
+                        "type": "core::array::Array::<core::starknet::account::Call>"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::array::Array::<core::array::Span::<core::felt252>>"
+                    }
+                ],
+                "state_mutability": "external"
+            },
+            {
+                "type": "function",
+                "name": "__validate__",
+                "inputs": [
+                    {
+                        "name": "calls",
+                        "type": "core::array::Array::<core::starknet::account::Call>"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::felt252"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "__validate_declare__",
+                "inputs": [
+                    {
+                        "name": "class_hash",
+                        "type": "core::felt252"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::felt252"
+                    }
+                ],
+                "state_mutability": "view"
+            },
+            {
+                "type": "function",
+                "name": "__validate_deploy__",
+                "inputs": [
+                    {
+                        "name": "class_hash",
+                        "type": "core::felt252"
+                    },
+                    {
+                        "name": "salt",
+                        "type": "core::felt252"
+                    },
+                    {
+                        "name": "public_key",
+                        "type": "core::felt252"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "type": "core::felt252"
+                    }
+                ],
+                "state_mutability": "view"
+            }
+        ]
+    },
+    {
+        "type": "constructor",
+        "name": "constructor",
+        "inputs": [
+            {
+                "name": "public_key",
+                "type": "core::felt252"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "passkeys::account::Account::Event",
+        "kind": "enum",
+        "variants": []
+    }
+]
+}

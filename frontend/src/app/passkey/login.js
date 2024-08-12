@@ -72,26 +72,31 @@ export async function loginCredentials() {
     };
 
     const publicKey = await crypto.subtle.importKey(
-        'jwk', // The format of the key being imported
-        publicKeyJwk,   // The key data in JWK format
+        'jwk', 
+        publicKeyJwk,  
         {
             name: 'ECDSA',
-            namedCurve: 'P-256' // Ensure this matches the 'crv' in the JWK
+            namedCurve: 'P-256' 
         },
-        true,   // Whether the key is extractable (e.g., can be exported)
-        ['verify'] // The intended key usages
+        true,
+        ['verify'] 
     );
     console.log(publicKey)
 
     const isValid = await crypto.subtle.verify(
         {
             name: 'ECDSA',
-            hash: { name: 'SHA-256' }, // WebAuthn uses SHA-256
+            hash: { name: 'SHA-256' },
         },
-        publicKey, // Public key
-        signature, // Signature (ArrayBuffer or Uint8Array)
-        signedData // Data that was signed (ArrayBuffer or Uint8Array)
+        publicKey,
+        signature,
+        signedData 
     );
     console.log("Signature verification: ", isValid)
+
+    return {
+        extraData: Object.keys(clientDataJson).includes("other_keys_can_be_added_here"),
+        challenge: buffer_challenge,
+     }
 };
 

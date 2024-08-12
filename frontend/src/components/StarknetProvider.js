@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { sepolia, mainnet } from "@starknet-react/chains";
+import { sepolia } from "@starknet-react/chains";
 import {
     StarknetConfig,
     publicProvider,
@@ -16,7 +16,6 @@ export function StarknetProvider({ children }) {
         // Show these connectors if the user has no connector installed.
         recommended: [
             argent(),
-            braavos(),
         ],
         // Hide recommended connectors if the user has any connector installed.
         includeRecommended: "onlyIfNoConnectors",

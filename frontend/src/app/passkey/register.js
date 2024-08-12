@@ -3,10 +3,6 @@ import { generateRegistrationOptions, verifyRegistrationResponse } from '@simple
 import * as helpers from '@simplewebauthn/server/helpers';
 import { uint8ArrayToBigInt } from './utils';
 
-//import { decodeCredentialPublicKey } from '@simplewebauthn/server/script/helpers/decodeCredentialPublicKey'
-//Credential ID: "hcelOAyw_qCfhfymQSkurD_4t7A"
-
-
 export async function registerPasskey(username) {
     const rpId = 'localhost'
     const expectedOrigin = ['http://localhost:3000'];
@@ -52,62 +48,7 @@ export async function registerPasskey(username) {
     console.log(parsedPubKey)
     console.log("x: ", uint8ArrayToBigInt(parsedPubKey.get(-2)), "y: ", uint8ArrayToBigInt(parsedPubKey.get(-3)))
 
-
-    /*
-    const pubKey = {
-        challenge: challenge,
-        rp: { id: rpId, name: 'starknet-passkey' },
-        user: { id: stringToArrayBuffer(username), name: username, displayName: username },
-        pubKeyCredParams: [
-            { type: 'public-key', alg: -7 },
-        ],
-        authenticatorSelection: {
-            authenticatorAttachment: 'platform',
-            userVerification: 'required',
-            residentKey: 'preferred',
-            requireResidentKey: false,
-        },
-        attestation: "direct"
-    };
-    const credential = await navigator.credentials.create({ publicKey: pubKey })
-    const attestationObj = credential.response.attestationObject
-    console.log(attestationObj)
-    console.log(credential.response.getPub)
-    */
-
-    /*
-    let response = await fetch('http://localhost:8000/register/start', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username: username })
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const publicKey = await response.json();
-    console.log("Public Key: ", publicKey)
-
-    const fidoData = await fido2Create(publicKey, username);
-
-    response = await fetch('http://localhost:8000/register/finish', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(fidoData)
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const response_finish = await response.json();
-    console.log(response_finish);
-    */
+    return { x: uint8ArrayToBigInt(parsedPubKey.get(-2)), y: uint8ArrayToBigInt(parsedPubKey.get(-3)) }
 }
 
 function getNewChallenge() {
@@ -134,11 +75,6 @@ function base64urlToArrayBuffer(base64url) {
     }
 
     return bytes.buffer;
-}
-
-function stringToArrayBuffer(str) {
-    const encoder = new TextEncoder();
-    return encoder.encode(str).buffer;
 }
 
 function stringToUint8Array(str) {
