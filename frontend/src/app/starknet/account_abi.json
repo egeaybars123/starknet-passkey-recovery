@@ -144,11 +144,11 @@
             },
             {
                 "type": "function",
-                "name": "get_owner",
+                "name": "get_recovery_key",
                 "inputs": [],
                 "outputs": [
                     {
-                        "type": "core::starknet::contract_address::ContractAddress"
+                        "type": "passkeys::account::P256_PubKey"
                     }
                 ],
                 "state_mutability": "view"
@@ -265,6 +265,10 @@
             {
                 "name": "public_key",
                 "type": "core::felt252"
+            },
+            {
+                "name": "owner",
+                "type": "core::starknet::contract_address::ContractAddress"
             }
         ]
     },
