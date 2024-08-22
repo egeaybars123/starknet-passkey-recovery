@@ -1,31 +1,58 @@
 import { startAuthentication } from '@simplewebauthn/browser';
-import { generateAuthenticationOptions, verifyAuthenticationResponse } from '@simplewebauthn/server';
-import { getNewChallenge, convertChallenge, base64ToArrayBuffer, convertEcdsaAsn1Signature, uint8ArrayToHex, uint8ArrayToBigInt } from './utils';
+import { generateAuthenticationOptions } from '@simplewebauthn/server';
+import { num, uint256 } from "starknet"
+import {
+    convertEcdsaAsn1Signature, uint8ArrayToHex, uint8ArrayToBigInt, hexStringToUint8Array,
+    bufferToBase64URLString, base64URLStringToBuffer
+} from './utils';
 import * as helpers from '@simplewebauthn/server/helpers';
 
-export async function loginCredentials() {
-    //const expectedOrigin = ['http://localhost:3000'];
+export async function loginCredentials(msgHash) {
     const rpId = 'localhost'
+    const challenge = "cc3b37ed859e1a3d9ff28ba910382eba8fac02ac00449eba82449a02415b6e"
+    const challenge_bytes = helpers.isoUint8Array.fromHex(challenge)
+    const buffer_challenge = new Uint8Array(32)
+    buffer_challenge[0] = 0
+    buffer_challenge.set(challenge_bytes, 1)
+    //console.log("Base64URL Encoded:", bufferToBase64URLString(buffer_challenge))
 
-    const newChallenge = getNewChallenge()
-    const challenge = convertChallenge(newChallenge)
-    const buffer_challenge = base64ToArrayBuffer(challenge)
-    console.log(challenge)
-
+    //console.log("Buffer challenge", helpers.isoUint8Array.toHex(buffer_challenge))
     const options = await generateAuthenticationOptions({
         rpID: rpId,
         challenge: buffer_challenge,
         userVerification: "preferred",
     })
-    //console.log(options)
     const credentials = await startAuthentication(options)
-    //console.log("Credentials: ", credentials)
 
-    //Check if the additional key exists for signature verificaton on Starknet
     const clientDataJson = helpers.isoBase64URL.toUTF8String(credentials.response.clientDataJSON)
-    console.log("ClientData: ", clientDataJson)
-    console.log("Result", Object.keys(clientDataJson).includes("other_keys_can_be_added_here"))
+    //console.log("ClientData: ", clientDataJson)
+    //console.log("Result", Object.keys(clientDataJson).includes("other_keys_can_be_added_here"))
 
+    const clientDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.clientDataJSON, "base64url")
+
+    const clientDataHashBuffer = await crypto.subtle.digest('SHA-256', clientDataBuffer)
+    const clientDataHash = new Uint8Array(clientDataHashBuffer)
+    console.log("ClientDataHash: ", uint8ArrayToHex(clientDataHash))
+    const authDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.authenticatorData, "base64url")
+    console.log("Auth Data: ", helpers.isoBase64URL.toBuffer(credentials.response.authenticatorData, "base64url").toString());
+    const signatureBuffer = helpers.isoBase64URL.toBuffer(credentials.response.signature, "base64url")
+    const signature = convertEcdsaAsn1Signature(signatureBuffer);
+    const signature_s = uint8ArrayToBigInt(new Uint8Array(signature.slice(32)))
+    const signature_r = uint8ArrayToBigInt(new Uint8Array(signature.slice(0, 32)))
+    console.log("signature_r: ", signature_r)
+    console.log("signature_s: ", signature_s)
+    //const signedData = helpers.isoUint8Array.concat([authDataBuffer, clientDataHash])
+
+    return {
+        extraData: Object.keys(clientDataJson).includes("other_keys_can_be_added_here"),
+        challenge: challenge,
+        r: uint256.bnToUint256(signature_r),
+        s: uint256.bnToUint256(signature_s),
+     }
+};
+
+
+/*
     const rawPubKey = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEWw-D-UcqK-5aMJNKykOXZurb-LZX1-sFeBGvL4GHRekyckym-gVuCmsQEdPTFWryTBHaUoiu_hwJC2Nxil0tpQ"
     const pubKeyArray = helpers.isoBase64URL.toBuffer(rawPubKey, "base64url")
     const extraData = new Uint8Array([165, 1, 2, 3, 38, 32, 1, 33, 88, 32,])
@@ -46,60 +73,4 @@ export async function loginCredentials() {
     offset += extraData2.length;
 
     combinedArray.set(credPubKey_Y, offset);
-
-    const clientDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.clientDataJSON, "base64url")
-
-    const clientDataHashBuffer = await crypto.subtle.digest('SHA-256', clientDataBuffer)
-    const clientDataHash = new Uint8Array(clientDataHashBuffer)
-    console.log("ClientDataHash: ", uint8ArrayToHex(clientDataHash))
-    const authDataBuffer = helpers.isoBase64URL.toBuffer(credentials.response.authenticatorData, "base64url")
-    console.log("Auth Data: ", helpers.isoBase64URL.toBuffer(credentials.response.authenticatorData, "base64url").toString());
-    const signatureBuffer = helpers.isoBase64URL.toBuffer(credentials.response.signature, "base64url")
-    const signature = convertEcdsaAsn1Signature(signatureBuffer);
-    const signature_s = uint8ArrayToBigInt(new Uint8Array(signature.slice(32)))
-    const signature_r = uint8ArrayToBigInt(new Uint8Array(signature.slice(0, 32)))
-    console.log("signature_r: ", signature_r)
-    console.log("signature_s: ", signature_s)
-    const signedData = helpers.isoUint8Array.concat([authDataBuffer, clientDataHash])
-
-    const publicKeyJwk = {
-        kty: "EC",
-        crv: "P-256",
-        x: helpers.isoBase64URL.fromBuffer(credPubKey_X, "base64url"),
-        y: helpers.isoBase64URL.fromBuffer(credPubKey_Y, "base64url"),
-        ext: true
-    };
-
-    /*
-    const publicKey = await crypto.subtle.importKey(
-        'jwk', 
-        publicKeyJwk,  
-        {
-            name: 'ECDSA',
-            namedCurve: 'P-256' 
-        },
-        true,
-        ['verify'] 
-    );
-    console.log(publicKey)
-
-    const isValid = await crypto.subtle.verify(
-        {
-            name: 'ECDSA',
-            hash: { name: 'SHA-256' },
-        },
-        publicKey,
-        signature,
-        signedData 
-    );
-    console.log("Signature verification: ", isValid)
     */
-
-    return {
-        extraData: Object.keys(clientDataJson).includes("other_keys_can_be_added_here"),
-        challenge: challenge,
-        r: signature_r,
-        s: signature_s,
-     }
-};
-

@@ -14,6 +14,55 @@ export function base64ToArrayBuffer(base64) {
     return bytes.buffer;
 }
 
+export function bufferToBase64URLString(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let str = '';
+
+    for (const charCode of bytes) {
+        str += String.fromCharCode(charCode);
+    }
+
+    const base64String = btoa(str);
+
+    return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+export function base64URLStringToBuffer(base64URLString) {
+    // Convert from Base64URL to Base64
+    const base64 = base64URLString.replace(/-/g, '+').replace(/_/g, '/');
+    /**
+     * Pad with '=' until it's a multiple of four
+     * (4 - (85 % 4 = 1) = 3) % 4 = 3 padding
+     * (4 - (86 % 4 = 2) = 2) % 4 = 2 padding
+     * (4 - (87 % 4 = 3) = 1) % 4 = 1 padding
+     * (4 - (88 % 4 = 0) = 4) % 4 = 0 padding
+     */
+    const padLength = (4 - (base64.length % 4)) % 4;
+    const padded = base64.padEnd(base64.length + padLength, '=');
+
+    // Convert to a binary string
+    const binary = atob(padded);
+
+    // Convert binary string to buffer
+    const buffer = new ArrayBuffer(binary.length);
+    const bytes = new Uint8Array(buffer);
+
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+
+    return buffer;
+}
+
+export function hexStringToUint8Array(hexString) {
+    if (hexString.slice(0, 2) == "0x") {
+        hexString = hexString.substring(2);
+    }
+    const bytes = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+
+    return bytes;
+}
+
 function readAsn1IntegerSequence(input) {
     if (input[0] !== 0x30) throw new Error('Input is not an ASN.1 sequence');
     const seqLength = input[1];

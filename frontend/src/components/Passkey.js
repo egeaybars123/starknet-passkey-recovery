@@ -3,9 +3,10 @@ import { registerPasskey } from "../app/passkey/register";
 import { loginCredentials } from "../app/passkey/login";
 import { useState, useMemo, useEffect } from "react";
 import { useAccount, useContractRead, useContract, useContractWrite } from "@starknet-react/core";
+import { WebAuthnSigner } from "@/app/passkey/signer";
 import abi from "../app/starknet/account_abi.json";
 import accountAddr from "../app/starknet/constants.json";
-import { cairo, num } from "starknet";
+import { Account, cairo, Contract, num,RpcProvider,json } from "starknet";
 
 export default function Passkey() {
     const [registerAddress, setRegisterAddress] = useState('');
@@ -52,7 +53,6 @@ export default function Passkey() {
     const recoverCall = useMemo(() => {
         if (!address || !recoveryContract || !recoverResult) return [];
 
-        console.log("Recover result", recoverResult)
         const challenge = Array.from(new TextEncoder().encode(recoverResult.challenge))
         //console.log("Challenge Array Tx: ", challenge)
         const sig_r = cairo.uint256(recoverResult.r)
@@ -76,6 +76,15 @@ export default function Passkey() {
         setRecoverResult(result)
 
         //console.log("Challenge: ", Array.from(uintArray))
+    }
+    const handleRecoveryStark = async () => {
+        const provider = new RpcProvider({ nodeUrl: 'https://free-rpc.nethermind.io/sepolia-juno' });
+        const signer = new WebAuthnSigner(new Uint8Array([1]))
+        const account = new Account(provider, recoveryAddress, signer, "1")
+        const contract = new Contract(abi.abi, recoveryAddress, account)
+
+        const inv = await contract.invoke('set_recovery_pub_key', [{pub_x: cairo.uint256(BigInt(1)), pub_y: cairo.uint256(BigInt(2))}])
+        console.log("SIGNER INTERFACE RESULT: ", inv)
     }
 
     const ownerAbi = [{
