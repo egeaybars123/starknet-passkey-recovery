@@ -47,7 +47,7 @@ export async function registerPasskey(username) {
 
     const parsedPubKey = helpers.decodeCredentialPublicKey(verification.registrationInfo.credentialPublicKey)
     //console.log(parsedPubKey)
-    console.log("x: ", num.toHex(uint8ArrayToBigInt(parsedPubKey.get(-2))), "y: ", num.toHex(uint8ArrayToBigInt(parsedPubKey.get(-3))))
+    //console.log("x: ", num.toHex(uint8ArrayToBigInt(parsedPubKey.get(-2))), "y: ", num.toHex(uint8ArrayToBigInt(parsedPubKey.get(-3))))
 
     return { x: uint8ArrayToBigInt(parsedPubKey.get(-2)), y: uint8ArrayToBigInt(parsedPubKey.get(-3)) }
 }

@@ -1,6 +1,6 @@
 import { startAuthentication } from '@simplewebauthn/browser';
 import { generateAuthenticationOptions } from '@simplewebauthn/server';
-import { uint256 } from "starknet"
+import { uint256, num } from "starknet"
 import {
     convertEcdsaAsn1Signature, uint8ArrayToHex, uint8ArrayToBigInt,
 } from './utils';
@@ -9,11 +9,17 @@ import * as helpers from '@simplewebauthn/server/helpers';
 //pub_key = 0x0295ae800856ef8bd7954ce34183a5ac1996692f55d47595b65e3466af2ffb21
 export async function loginCredentials(msgHash) {
     const rpId = 'localhost'
-    const challenge = "cc3b37ed859e1a3d9ff28ba910382eba8fac02ac00449eba82449a02415b6e"
-    const challenge_bytes = helpers.isoUint8Array.fromHex(challenge)
+    const challenge = msgHash
+    console.log(challenge.length)
+    //const challenge_bytes = helpers.isoUint8Array.fromHex(challenge)
+    const challenge_bytes = num.hexToBytes(challenge)
+    console.log(challenge_bytes)
+    const buffer_challenge = challenge_bytes
+    /*
     const buffer_challenge = new Uint8Array(32)
     buffer_challenge[0] = 0
     buffer_challenge.set(challenge_bytes, 1)
+    */
     //console.log("Base64URL Encoded:", bufferToBase64URLString(buffer_challenge))
 
     //console.log("Buffer challenge", helpers.isoUint8Array.toHex(buffer_challenge))

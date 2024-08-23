@@ -1,17 +1,14 @@
-import { uint256, transaction, encode, hash, num } from 'starknet'
+import { uint256, transaction, encode, hash, num, Signer } from 'starknet'
 import { loginCredentials } from './login';
 
-export class WebAuthnSigner {
-    constructor(pk) {
-        this.pk =
-            pk instanceof Uint8Array
-                ? encode.buf2hex(pk).padStart(64, '0')
-                : encode.removeHexPrefix(toHex(pk)).padStart(64, '0');
-    }
-
+export class WebAuthnSigner extends Signer {
+    
     async signTransaction(transactions, details) {
         const compiledCalldata = transaction.getExecuteCalldata(transactions, details.cairoVersion);
-        const det = details; 
+        const det = details;
+        //console.log("Max fee type:", typeof det.maxFee)
+        //const updatedMaxFee = 0
+        //det.maxFee = updatedMaxFee
         const msgHash = hash.calculateInvokeTransactionHash({
             ...det,
             senderAddress: det.walletAddress,
@@ -20,10 +17,9 @@ export class WebAuthnSigner {
             nonceDataAvailabilityMode: intDAM(det.nonceDataAvailabilityMode),
             feeDataAvailabilityMode: intDAM(det.feeDataAvailabilityMode),
         });
-        
-        console.log("Message hash:", msgHash)
         return this.signRaw(msgHash)
     }
+    
     async signRaw(msgHash) {
         const result = await loginCredentials(msgHash)
         const sig_r = uint256.bnToUint256(result.r)
