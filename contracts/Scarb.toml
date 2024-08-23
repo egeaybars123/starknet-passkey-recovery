@@ -1,13 +1,21 @@
 [package]
-name = "passkeys"
+name = "passkey"
 version = "0.1.0"
 
+# See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest.html
+
 [dependencies]
-starknet = ">=2.3.0"
+starknet = "=2.5.4"
 alexandria_math = { path = "../../passkey_codec/alexandria/src/math" }
 alexandria_bytes = { path = "../../passkey_codec/alexandria/src/bytes" }
+alexandria_encoding = { path = "../../passkey_codec/alexandria/src/encoding" }
+
+[dev-dependencies]
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.27.0" }
+
 
 [[target.starknet-contract]]
 sierra = true
-casm = true
-casm-add-pythonic-hints = true
+
+[scripts]
+test = "snforge test"
