@@ -1,4 +1,4 @@
-import { uint256, transaction, encode, hash, num} from 'starknet'
+import { uint256, transaction, encode, hash, num } from 'starknet'
 import { loginCredentials } from './login';
 
 export class WebAuthnSigner {

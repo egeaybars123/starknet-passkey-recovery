@@ -2,6 +2,7 @@ import { startAuthentication, startRegistration } from '@simplewebauthn/browser'
 import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
 import * as helpers from '@simplewebauthn/server/helpers';
 import { uint8ArrayToBigInt } from './utils';
+import { num } from "starknet"
 
 export async function registerPasskey(username) {
     const rpId = 'localhost'
@@ -11,7 +12,7 @@ export async function registerPasskey(username) {
     let challenge = convertChallenge(newChallenge);
     const buffChallenge = base64urlToArrayBuffer(challenge)
 
-    username = username.slice(2)
+    username = username.slice(2) //username is the Starknet address (in hexadecimal format) -> '0x' is removed
 
     const options = await generateRegistrationOptions(
         {
@@ -34,7 +35,7 @@ export async function registerPasskey(username) {
     )
 
     const attObj = await startRegistration(options)
-    console.log(attObj)
+    //console.log(attObj)
 
     const verification = await verifyRegistrationResponse({
         response: attObj,
@@ -45,8 +46,8 @@ export async function registerPasskey(username) {
     console.log(verification)
 
     const parsedPubKey = helpers.decodeCredentialPublicKey(verification.registrationInfo.credentialPublicKey)
-    console.log(parsedPubKey)
-    console.log("x: ", uint8ArrayToBigInt(parsedPubKey.get(-2)), "y: ", uint8ArrayToBigInt(parsedPubKey.get(-3)))
+    //console.log(parsedPubKey)
+    console.log("x: ", num.toHex(uint8ArrayToBigInt(parsedPubKey.get(-2))), "y: ", num.toHex(uint8ArrayToBigInt(parsedPubKey.get(-3))))
 
     return { x: uint8ArrayToBigInt(parsedPubKey.get(-2)), y: uint8ArrayToBigInt(parsedPubKey.get(-3)) }
 }

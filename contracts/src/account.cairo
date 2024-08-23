@@ -177,7 +177,6 @@ mod Account {
 
             //Stark EC 
             if signature_type == 0 {
-                
                 let is_valid = check_ecdsa_signature(
                     hash, self.public_key.read(), *signature.at(1_u32), *signature.at(2_u32)
                 );
@@ -234,75 +233,5 @@ mod Account {
             };
             res
         }
-        
-        fn u256_to_u8s(self: @ContractState, word: u256) -> Array<u8> {
-            let num_u128: u128 = 0x100;
-            let num: NonZero<u128> = num_u128.try_into().unwrap();
-            let (rest, byte_32) = integer::u128_safe_divmod(word.low, num);
-            let (rest, byte_31) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_30) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_29) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_28) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_27) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_26) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_25) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_24) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_23) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_22) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_21) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_20) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_19) = integer::u128_safe_divmod(rest, num);
-            let (byte_17, byte_18) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_16) = integer::u128_safe_divmod(word.high, num);
-            let (rest, byte_15) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_14) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_13) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_12) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_11) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_10) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_9) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_8) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_7) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_6) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_5) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_4) = integer::u128_safe_divmod(rest, num);
-            let (rest, byte_3) = integer::u128_safe_divmod(rest, num);
-            let (byte_1, byte_2) = integer::u128_safe_divmod(rest, num);
-            array![
-                byte_1.try_into().unwrap(),
-                byte_2.try_into().unwrap(),
-                byte_3.try_into().unwrap(),
-                byte_4.try_into().unwrap(),
-                byte_5.try_into().unwrap(),
-                byte_6.try_into().unwrap(),
-                byte_7.try_into().unwrap(),
-                byte_8.try_into().unwrap(),
-                byte_9.try_into().unwrap(),
-                byte_10.try_into().unwrap(),
-                byte_11.try_into().unwrap(),
-                byte_12.try_into().unwrap(),
-                byte_13.try_into().unwrap(),
-                byte_14.try_into().unwrap(),
-                byte_15.try_into().unwrap(),
-                byte_16.try_into().unwrap(),
-                byte_17.try_into().unwrap(),
-                byte_18.try_into().unwrap(),
-                byte_19.try_into().unwrap(),
-                byte_20.try_into().unwrap(),
-                byte_21.try_into().unwrap(),
-                byte_22.try_into().unwrap(),
-                byte_23.try_into().unwrap(),
-                byte_24.try_into().unwrap(),
-                byte_25.try_into().unwrap(),
-                byte_26.try_into().unwrap(),
-                byte_27.try_into().unwrap(),
-                byte_28.try_into().unwrap(),
-                byte_29.try_into().unwrap(),
-                byte_30.try_into().unwrap(),
-                byte_31.try_into().unwrap(),
-                byte_32.try_into().unwrap(),
-            ]
-        }
-        
     }
 }

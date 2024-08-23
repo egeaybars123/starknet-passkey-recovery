@@ -109,22 +109,6 @@
                     {
                         "name": "recoverer",
                         "type": "core::starknet::contract_address::ContractAddress"
-                    },
-                    {
-                        "name": "challenge",
-                        "type": "core::array::Array::<core::integer::u8>"
-                    },
-                    {
-                        "name": "r",
-                        "type": "core::integer::u256"
-                    },
-                    {
-                        "name": "s",
-                        "type": "core::integer::u256"
-                    },
-                    {
-                        "name": "extra_data",
-                        "type": "core::bool"
                     }
                 ],
                 "outputs": [],
@@ -265,10 +249,6 @@
             {
                 "name": "public_key",
                 "type": "core::felt252"
-            },
-            {
-                "name": "owner",
-                "type": "core::starknet::contract_address::ContractAddress"
             }
         ]
     },
